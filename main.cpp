@@ -11,14 +11,14 @@ void TriggerAltSpace()
     keybd_event(VK_MENU, 0, 0, 0);  // Press Alt key
     keybd_event(VK_SPACE, 0, 0, 0);  // Press Space key
     keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);  // Release Alt key
-    keybd_event(VK_SPACE, 0, KEYEVENTF_KEYUP, 0);  // Release Space key
+    keybd_event(VK_SPACE, 0, KEYEVENTF_KEYUP, 0);  // Release the Space key
 }
 
-LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK KeyboardProc(const int nCode, const WPARAM wParam, const LPARAM lParam)
 {
     if (nCode == HC_ACTION)
     {
-        KBDLLHOOKSTRUCT* pKeyboard = (KBDLLHOOKSTRUCT*)lParam;
+        const auto* pKeyboard = reinterpret_cast<KBDLLHOOKSTRUCT *>(lParam);
 
         // Handle key press
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
@@ -26,7 +26,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
             if (pKeyboard->vkCode == VK_LWIN)
             {
                 windowsKeyPressed = true;
-                otherKeyPressed = false;  // Reset when Windows key is pressed
+                otherKeyPressed = false;  // Reset when the Windows key is pressed
                 return 1;  // Block the default Windows key action for now
             }
 
@@ -35,9 +35,9 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
                 otherKeyPressed = true;  // Another key is pressed while Windows key is down
                 // Simulate Win + [key]
                 keybd_event(VK_LWIN, 0, 0, 0);  // Simulate Windows key press
-                keybd_event((BYTE)pKeyboard->vkCode, 0, 0, 0);  // Simulate the other key press
-                keybd_event((BYTE)pKeyboard->vkCode, 0, KEYEVENTF_KEYUP, 0);  // Release the other key
-                keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);  // Release Windows key
+                keybd_event(static_cast<BYTE>(pKeyboard->vkCode), 0, 0, 0);  // Simulate the other key press
+                keybd_event(static_cast<BYTE>(pKeyboard->vkCode), 0, KEYEVENTF_KEYUP, 0);  // Release the other key
+                keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);  // Release the Windows key
 
                 return 1;  // Block this event from propagating further
             }
@@ -63,14 +63,14 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(hHook, nCode, wParam, lParam);  // Pass to the next hook
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int)
 {
     //HWND Console = GetConsoleWindow();
     //ShowWindow(Console, SW_HIDE);
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, hInstance, 0);
     if (!hHook)
     {
-        MessageBox(nullptr, L"Failed to install hook!", L"Error", MB_ICONERROR);
+        MessageBox(nullptr, reinterpret_cast<LPCSTR>(L"Failed to install hook!"), reinterpret_cast<LPCSTR>(L"Error"), MB_ICONERROR);
         return 1;
     }
 
