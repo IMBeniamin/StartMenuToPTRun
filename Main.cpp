@@ -4,20 +4,16 @@
 #include "Logger.h"
 
 
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR, int) {
-    LogConfig::ENABLE_DEBUG = false;
-    LogConfig::ENABLE_CONSOLE = false;
-    LogConfig::ENABLE_FILE = true;
-#ifdef DEBUG
-        LogConfig::ENABLE_DEBUG = true;
-        LogConfig::ENABLE_CONSOLE = true;
-        LogConfig::ENABLE_FILE = false;
-#endif
+int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
+    LogConfig::ENABLE_DEBUG = true;
+    LogConfig::ENABLE_CONSOLE = true;
+    LogConfig::ENABLE_FILE = false;
 
-    if (auto keyboardHook = KeyboardHook(); !keyboardHook.Install(hInstance)) {
+    auto keyboardHook = KeyboardHook();
+
+    if (!keyboardHook.Install(hInstance)) {
         return 1;
     }
-    Logger::getInstance().log(INFO_LEVEL, APPLICATION, "Keyboard hook installed");
 
 
     // Message loop to keep the hook

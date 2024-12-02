@@ -38,10 +38,14 @@ Logger &Logger::getInstance() {
 }
 
 Logger::Logger() {
-    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    logfile_ = std::ofstream("log_" + std::to_string(now) + ".log", std::ios::out | std::ios::app);
-    if (!logfile_) {
-        std::cerr << "Unable to open log file!" << std::endl;
+    if (!LogConfig::ENABLE_FILE && !LogConfig::ENABLE_CONSOLE) {
+        std::cerr << "No output enabled for logger!" << std::endl;
+    } else if (LogConfig::ENABLE_FILE) {
+        const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        logfile_ = std::ofstream("log_" + std::to_string(now) + ".log", std::ios::out | std::ios::app);
+        if (!logfile_) {
+            std::cerr << "Unable to open log file!" << std::endl;
+        }
     }
 }
 

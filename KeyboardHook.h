@@ -25,8 +25,6 @@ private:
 
     int HandleKeyEvent(WPARAM wParam, const KBDLLHOOKSTRUCT *pKeyboard);
 
-    static void SimulateKeyPress(BYTE key);
-
     static void TriggerAltSpace();
 };
 

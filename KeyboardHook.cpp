@@ -23,6 +23,8 @@ bool KeyboardHook::Install(HINSTANCE hinstance) {
         Logger::getInstance().log(CRITICAL_LEVEL, EVENTS, "Failed to install keyboard hook");
         const auto errorMessage = GetLastError();
         Logger::getInstance().log(CRITICAL_LEVEL, EVENTS, std::to_string(errorMessage));
+    } else {
+        Logger::getInstance().log(DEBUG_LEVEL, EVENTS, "Keyboard hook installed");
     }
     return hHook != nullptr;
 }
@@ -70,18 +72,6 @@ int KeyboardHook::HandleKeyEvent(const WPARAM wParam, const KBDLLHOOKSTRUCT *pKe
         return 1;
     }
     return NULL;
-}
-
-void KeyboardHook::SimulateKeyPress(const BYTE key) {
-    INPUT inputs[2] = {};
-    inputs[0].type = inputs[1].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = inputs[1].ki.wVk = key;
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-    if (const auto _sentInputs = SendInput(2, inputs, sizeof(INPUT)); _sentInputs != 2) {
-        Logger::getInstance().log(CRITICAL_LEVEL, EVENTS, "Failed to simulate key press");
-        const auto errorMessage = GetLastError();
-        Logger::getInstance().log(CRITICAL_LEVEL, EVENTS, std::to_string(errorMessage));
-    }
 }
 
 void KeyboardHook::TriggerAltSpace() {
