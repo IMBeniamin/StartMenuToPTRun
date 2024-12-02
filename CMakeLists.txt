@@ -4,4 +4,7 @@ project(StartMenuToPTRun)
 set(CMAKE_CXX_STANDARD 26)
 
 add_executable(StartMenuToPTRun main.cpp
-        main.h)
+        KeyboardHook.h
+        KeyboardHook.cpp
+        Logger.cpp
+        Logger.h)
