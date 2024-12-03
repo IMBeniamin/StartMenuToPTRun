@@ -20,11 +20,11 @@ bool KeyboardHook::Install(HINSTANCE hinstance) {
     instance = this;
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, hinstance, 0);
     if (!hHook) {
-        Logger::getInstance().log(CRITICAL_LEVEL, EVENTS, "Failed to install keyboard hook");
+        Logger::getInstance().log(CRITICAL_LEVEL, APPLICATION, "Failed to install keyboard hook");
         const auto errorMessage = GetLastError();
-        Logger::getInstance().log(CRITICAL_LEVEL, EVENTS, std::to_string(errorMessage));
+        Logger::getInstance().log(CRITICAL_LEVEL, APPLICATION, std::to_string(errorMessage));
     } else {
-        Logger::getInstance().log(DEBUG_LEVEL, EVENTS, "Keyboard hook installed");
+        Logger::getInstance().log(DEBUG_LEVEL, APPLICATION, "Keyboard hook installed");
     }
     return hHook != nullptr;
 }

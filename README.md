@@ -1,10 +1,37 @@
-'.exe' contains the .exe you'll want to have open on launch, which can be set in task manager
-'all code' contains the C++ code for the program if you want to look over it / ask GPT what it should do.
+## This app aims to be extremely lightweight and run in the background to remap the meta (aka windows) key to the alt+space combo
 
-When running the program nothing will show up on your screen, there will also be nothing in your task tray. (this is because I am not smart enough and do not have the time to do this currently).
+<br>
 
-To turn it off you will have to go into task manager, look for '_StartMenuToPTRun.exe' (which should show close if not at the top), right click it and press end task.
+## !! _**Absolutely no data leaves your machine**_ !!
 
-Feel free to take this code and improve it as you please, I doubt it's that optimised as I spent maybe a few hours on it at best but it uses next to no system resources anyways.
+You can grab the latest release from the releases page. (Please check the sources first).
 
-Enjoy!
+Release builds have file logging activated by default. Check the logging section for more information.
+
+<br>
+
+## At the moment, no GUI or tray icon is available. This will likely change in the future.
+
+To stop the process, open task manager (Ctrl + Shift + Esc), search for the executable name and end the task.
+
+When running the program, nothing will show up on your screen. (In the future a tray icon may be added)
+
+
+<details open>
+
+<summary>
+Logging tips and information
+</summary>
+
+### Logging
+
+A very lightweight logger has been added.
+
+It can be configured by using the LogConfig object to specify the level and the destination of the logs.
+If the file logging is enabled, the logs will be saved in the following directory:
+`%appdata%\KeyboardHook\log_<timestamp>.log`
+A new log file will be created every time the application is started.
+</details>
+
+
+

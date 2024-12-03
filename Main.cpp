@@ -7,7 +7,7 @@
 int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     LogConfig::ENABLE_DEBUG = true;
     LogConfig::ENABLE_CONSOLE = true;
-    LogConfig::ENABLE_FILE = false;
+    LogConfig::ENABLE_FILE = true;
 
     auto keyboardHook = KeyboardHook();
 

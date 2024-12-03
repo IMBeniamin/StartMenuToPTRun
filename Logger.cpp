@@ -3,6 +3,7 @@
 #include <ctime>
 #include <iomanip>
 #include <utility>
+#include <shlobj.h>
 
 bool LogConfig::ENABLE_DEBUG = false;
 bool LogConfig::ENABLE_CONSOLE = false;
@@ -37,14 +38,53 @@ Logger &Logger::getInstance() {
     return instance;
 }
 
+std::string Logger::getLogFilePath() {
+    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    PWSTR ppszPath = nullptr; // Declare a PWSTR for the output
+
+    const auto pathCallResult = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &ppszPath);
+
+    if (SUCCEEDED(pathCallResult)) {
+        std::wstring appdataPathW(ppszPath);
+        const std::string appdataPath(appdataPathW.begin(), appdataPathW.end());
+        CoTaskMemFree(ppszPath);
+        return appdataPath + "\\KeyboardHook\\log_" + std::to_string(now) + ".log";
+    }
+    log(CRITICAL_LEVEL, Category::APPLICATION, "Unable to get log file path!");
+    LogConfig::ENABLE_FILE = false;
+    return "";
+}
+
+bool Logger::setLogFileStream(const std::string &logFilePath) {
+    logfile_ = std::ofstream(logFilePath);
+    if (logfile_.is_open()) {
+        log(DEBUG_LEVEL, Category::APPLICATION, "File Logger initialized");
+        return true;
+    }
+    log(CRITICAL_LEVEL, Category::APPLICATION, "Unable to open log stream!");
+    return false;
+}
+
+
 Logger::Logger() {
     if (!LogConfig::ENABLE_FILE && !LogConfig::ENABLE_CONSOLE) {
         std::cerr << "No output enabled for logger!" << std::endl;
     } else if (LogConfig::ENABLE_FILE) {
-        const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        logfile_ = std::ofstream("log_" + std::to_string(now) + ".log", std::ios::out | std::ios::app);
-        if (!logfile_) {
-            std::cerr << "Unable to open log file!" << std::endl;
+        const auto logFilePath = getLogFilePath();
+        if (logFilePath.empty()) {
+            return;
+        }
+        if (auto setLogFileResult = setLogFileStream(logFilePath))
+            return;
+
+        // Failed to open the log file, try creating the folder
+        const auto folderPath = logFilePath.substr(0, logFilePath.find_last_of('\\'));
+        if (CreateDirectory(folderPath.c_str(), nullptr)) {
+            log(DEBUG_LEVEL, Category::APPLICATION, "Log folder created");
+            setLogFileStream(logFilePath);
+        } else {
+            log(CRITICAL_LEVEL, Category::APPLICATION, "Unable to create log folder!");
+            LogConfig::ENABLE_FILE = false;
         }
     }
 }

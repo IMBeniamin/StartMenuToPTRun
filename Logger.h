@@ -82,6 +82,10 @@ private:
     // Private constructor and destructor for singleton
     Logger();
 
+    std::string getLogFilePath();
+
+    bool setLogFileStream(const std::string& logFilePath);
+
     ~Logger();
 };
 
